@@ -1,5 +1,8 @@
 import cv2
+from PIL import Image 
+import os
 def controls(vid, key, cut):
+        import main
         #Toggle autofocus
         if key == ord('f'):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:
@@ -60,7 +63,27 @@ def controls(vid, key, cut):
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
 
         if key == ord('s'):
-            cv2.imwrite('teste.png',cut)
+            cv2.imwrite("./temp/" + str(str(main.count) + ".png"),cut)
+            main.count = main.count + 1
+            print("Page " + str(main.count) + " saved")
+        if key == ord('d'):
+            images = []
+            print(main.count)
+            for i in range(main.count):
+                temp = Image.open("./temp/"+str(i)+".png")
+                images.append(temp)
+
+            pdf_path = "./test.pdf"
+                
+            images[0].save(
+                pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
+            )
+            
+            main.count = 0
+
+            for filename in os.listdir('./temp/'):
+                if os.path.isfile(os.path.join('./temp/', filename)):
+                 os.remove(os.path.join('./temp/', filename))
 
         if key == ord(','):
             return 90

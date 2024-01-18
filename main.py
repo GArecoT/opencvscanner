@@ -1,5 +1,4 @@
 import cv2
-
 from controls import controls
 from imageprocess import image_process
 cam_index = 0
@@ -7,6 +6,9 @@ focus = 400.0
 contrast = 64.0
 saturation = 30
 rotation = 0
+
+global count
+count = 0
 
 #set initial paramethers
 vid = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW) #Comment this line on Linux
@@ -33,7 +35,7 @@ while (True):
     if keys == ord('q'):
         break
     else:
-        rotation += controls(vid,keys, cut)
+        rotation += controls(vid, keys, cut)
         if rotation == 360:
             rotation = 0
         elif rotation == -90:

@@ -62,3 +62,10 @@ def controls(vid, key, cut):
         if key == ord('s'):
             cv2.imwrite('teste.png',cut)
 
+        if key == ord(','):
+            return 90
+        if key == ord('.'):
+            return -90
+
+        return 0
+

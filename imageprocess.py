@@ -1,6 +1,16 @@
 import cv2
 import numpy as np
-def image_process(frame):
+def image_process(frame, rotation):
+    if rotation == 90:
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+    elif rotation == 180:
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+    elif rotation == 270:
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)       
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        frame=cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
     img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(img_gray, 150, 255, cv2.THRESH_BINARY)
     kernel = np.ones((5,5))

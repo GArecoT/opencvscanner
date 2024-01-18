@@ -63,11 +63,11 @@ def controls(vid, key, cut, count):
             print("CONTRAST: " + str(contrast))
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
 
-        if key == ord('a'):
+        if key == 92:
             cv2.imwrite("./temp/" + str(str(count) + ".png"),cut)
             count = count + 1
             print("Page " + str(count) + " saved")
-        if key == ord('s'):
+        if key == 103:
             images = []
             for i in range(count):
                 temp = Image.open("./temp/"+str(i)+".png")

@@ -33,7 +33,6 @@ while (True):
 
 
     keys = cv2.waitKey(1) & 0xFF
-    print(keys)
     if keys == ord('q'):
         break
     else:

@@ -1,8 +1,9 @@
 import cv2
 from PIL import Image 
 import os
-def controls(vid, key, cut):
-        import main
+import tkinter as tk
+from tkinter import simpledialog
+def controls(vid, key, cut, count):
         #Toggle autofocus
         if key == ord('f'):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:
@@ -62,33 +63,39 @@ def controls(vid, key, cut):
             print("CONTRAST: " + str(contrast))
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
 
+        if key == ord('a'):
+            cv2.imwrite("./temp/" + str(str(count) + ".png"),cut)
+            count = count + 1
+            print("Page " + str(count) + " saved")
         if key == ord('s'):
-            cv2.imwrite("./temp/" + str(str(main.count) + ".png"),cut)
-            main.count = main.count + 1
-            print("Page " + str(main.count) + " saved")
-        if key == ord('d'):
             images = []
-            print(main.count)
-            for i in range(main.count):
+            for i in range(count):
                 temp = Image.open("./temp/"+str(i)+".png")
                 images.append(temp)
 
-            pdf_path = "./test.pdf"
-                
-            images[0].save(
-                pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
-            )
+            answer = simpledialog.askstring("Input", "File Name")
             
-            main.count = 0
+            #Check if file exists
+            if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
+                print("File already exists")
+            else:
+                pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
+                
+                images[0].save(
+                    pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
+                )
+                
+                count = 0
+                print("File " + str(answer).upper() + ".pdf is saved!")    
 
-            for filename in os.listdir('./temp/'):
-                if os.path.isfile(os.path.join('./temp/', filename)):
-                 os.remove(os.path.join('./temp/', filename))
-
+                for filename in os.listdir('./temp/'):
+                    if os.path.isfile(os.path.join('./temp/', filename)):
+                     os.remove(os.path.join('./temp/', filename))
+            
         if key == ord(','):
-            return 90
+            return -90, count
         if key == ord('.'):
-            return -90
+            return 90, count
 
-        return 0
+        return 0, count
 

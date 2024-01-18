@@ -1,5 +1,5 @@
 import cv2
-def controls(vid, key):
+def controls(vid, key, cut):
         #Toggle autofocus
         if key == ord('f'):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:
@@ -58,4 +58,7 @@ def controls(vid, key):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             print("CONTRAST: " + str(contrast))
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
+
+        if key == ord('s'):
+            cv2.imwrite('teste.png',cut)
 

@@ -14,7 +14,7 @@ count = 0
 #set initial paramethers
 #vid = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW) #Comment this line on Linux
 vid = cv2.VideoCapture(cam_index, cv2.CAP_V4L2) #Comment this line on Windows
-vid.set(cv2.CAP_PROP_FPS, 10.0)
+vid.set(cv2.CAP_PROP_FPS, 60.0)
 vid.set(cv2.CAP_PROP_FRAME_WIDTH, 2048)
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 1536)
 vid.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))

@@ -1,8 +1,8 @@
 import cv2
 from PIL import Image 
 import os
-import tkinter as tk
 from tkinter import simpledialog
+from tkinter import messagebox
 def controls(vid, key, cut, count):
         #Toggle autofocus
         if key == ord('f'):
@@ -78,6 +78,7 @@ def controls(vid, key, cut, count):
             #Check if file exists
             if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
                 print("File already exists")
+                messagebox.showinfo("ERROR","File already exists")                
             else:
                 pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
                 

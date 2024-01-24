@@ -4,6 +4,14 @@ import os
 from tkinter import simpledialog
 from tkinter import messagebox
 def controls(vid, key, cut, count):
+        if key == ord('e'):
+            if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
+                vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1.0)
+                print("Auto Exposure Off")
+            elif vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 1.0:
+                vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 3.0)
+                print("Auto Exposure On")
+
         #Toggle autofocus
         if key == ord('f'):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:

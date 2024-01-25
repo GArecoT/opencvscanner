@@ -73,36 +73,38 @@ def controls(vid, key, cut, count, config):
         
         #add page
         if key == int(config.get('controls','addpage')): #this is the key code
-            cv2.imwrite("./temp/" + str(str(count) + ".png"),cut)
+            cv2.imwrite("./.temp/" + str(str(count) + ".png"),cut)
             count = count + 1
             print("Page " + str(count) + " saved")
         #save file
         if key == int(config.get('controls','savefile')): #this is the keycode
             images = []
             for i in range(count):
-                temp = Image.open("./temp/"+str(i)+".png")
+                temp = Image.open("./.temp/"+str(i)+".png")
                 images.append(temp)
-
-            answer = simpledialog.askstring("Input", "File Name")
             
-            #Check if file exists
-            if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
-                print("File already exists")
-                messagebox.showinfo("ERROR","File already exists")                
+            if(len(images) > 0):
+                answer = simpledialog.askstring("Input", "File Name")
+                
+                #Check if file exists
+                if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
+                    print("File already exists")
+                    messagebox.showinfo("ERROR","File already exists")                
+                else:
+                    pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
+                    
+                    images[0].save(
+                        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
+                    )
+                    
+                    count = 0
+                    print("File " + str(answer).upper() + ".pdf is saved!")    
+
+                    for filename in os.listdir('./.temp/'):
+                        if os.path.isfile(os.path.join('./.temp/', filename)):
+                         os.remove(os.path.join('./.temp/', filename))
             else:
-                pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
-                
-                images[0].save(
-                    pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
-                )
-                
-                count = 0
-                print("File " + str(answer).upper() + ".pdf is saved!")    
-
-                for filename in os.listdir('./temp/'):
-                    if os.path.isfile(os.path.join('./temp/', filename)):
-                     os.remove(os.path.join('./temp/', filename))
-            
+                    messagebox.showinfo("ERROR","No page scanned")                
         if key == ord(config.get('controls','rotate-90')):
             return -90, count
         if key == ord(config.get('controls','rotate+90')):

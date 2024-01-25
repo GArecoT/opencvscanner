@@ -15,6 +15,10 @@ __pycache__/
 *.png
 *.ini
 
+#temp dirs
+.temp
+pdf_output
+
 # Distribution / packaging
 .Python
 build/

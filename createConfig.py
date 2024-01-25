@@ -35,6 +35,12 @@ def createConfig(config):
         }
         config.write(open('config.ini', 'w'))
 
+def creatFolders():
+    if(os.path.isdir('./.temp') == False):
+        os.mkdir('./.temp')
+    if(os.path.isdir('./pdf_output') == False):
+        os.mkdir('./pdf_output')
+
 def checkConfig(config):
     if(os.path.isfile("./config.ini") == True):
         config.readfp(open('./config.ini'))

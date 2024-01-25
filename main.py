@@ -1,7 +1,7 @@
 import cv2
 from controls import controls
 from imageprocess import image_process
-from createConfig import createConfig, checkConfig
+from createConfig import createConfig, checkConfig, creatFolders
 import configparser
 
 #Config file
@@ -9,6 +9,9 @@ config = configparser.ConfigParser()
 createConfig(config)
 checkConfig(config)
 config.read('./config.ini')
+
+#craete dirs
+creatFolders()
 
 #load default values
 cam_index = int(config.get('camera_default', 'cam_index')) 

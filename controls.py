@@ -24,51 +24,51 @@ def controls(vid, key, cut, count, config):
         #Control Focus
         if key == ord(config.get('controls','focus-')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
-            print("FOCUS: " + str(focus))
+            print("FOCUS: " + str(focus-5))
             vid.set(cv2.CAP_PROP_FOCUS, focus-5)
         if key == ord(config.get('controls','focus+')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
-            print("FOCUS: " + str(focus))
+            print("FOCUS: " + str(focus+5))
             vid.set(cv2.CAP_PROP_FOCUS, focus+5)
         
         #Control exposure
         if key == ord(config.get('controls','exposure-')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
-            print("EXPOSURE: " + str(exposure))
+            print("EXPOSURE: " + str(exposure-100))
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure-100)
         if key == ord(config.get('controls','exposure+')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
-            print("EXPOSURE: " + str(exposure))
+            print("EXPOSURE: " + str(exposure+100))
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure+100)
 
         #Control brightness
         if key == ord(config.get('controls','brightness-')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
-            print("BRIGHTNESS: " + str(brightness))
+            print("BRIGHTNESS: " + str(brightness-5))
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness-5)
         if key == ord(config.get('controls','brightness+')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
-            print("BRIGHTNESS: " + str(brightness))
+            print("BRIGHTNESS: " + str(brightness+5))
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness+5)
 
         #Control gain 
         if key == ord(config.get('controls','gain-')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
-            print("GAIN: " + str(gain))
+            print("GAIN: " + str(gain-5))
             vid.set(cv2.CAP_PROP_GAIN, gain-5)
         if key == ord(config.get('controls','gain+')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
-            print("GAIN: " + str(gain))
+            print("GAIN: " + str(gain+5))
             vid.set(cv2.CAP_PROP_GAIN, gain+5)
 
         #Control contrast 
         if key == ord(config.get('controls','contrast-')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
-            print("CONTRAST: " + str(contrast))
+            print("CONTRAST: " + str(contrast-5))
             vid.set(cv2.CAP_PROP_CONTRAST, contrast-5)
         if key == ord(config.get('controls','contrast+')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
-            print("CONTRAST: " + str(contrast))
+            print("CONTRAST: " + str(contrast+5))
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
         
         #add page

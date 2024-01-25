@@ -41,6 +41,11 @@ The settings can be edited in the configs.ini file. This file is created the fir
 
 You need to change the "os" field depending on the OS that you are using (Windows or Linux).
 
+### Usage
+```console
+python ./main.py
+```
+
 ### Default controls
 - Right Alt: Add page
 - Right Control: Save PDF

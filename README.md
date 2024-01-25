@@ -2,9 +2,44 @@
 ![Desk Camera Scanner](./public/scanner.jpg) 
 OpenCV Scanner uses the OpenCV library to scan documents using a Webcam or Camera Scanner.
 
-## Usage
+## Instalation
+In order to use this program, you need to install *Python* and some depedencies.
+
+### Windows
+Download and install Python [here](https://www.python.org/). Or using [*Scoop*](https://github.com/ScoopInstaller/Scoop):
+```console
+scoop install python
+```
+
+After that, install the dependencies:
+```console
+pip install pillow
+pip install opencv-python 
+```
+
+### Linux
+
+#### Arch:
+
+```console
+sudo pacman -S python
+```
+and the dependencies:
+```console
+sudo pacman -S python-pillow
+sudo pacman -S python-opencv
+```
+
+#### Ubuntu:
+```console
+sudo apt install python
+pip install pillow
+pip install opencv-python
+```
 ### Configuration
-The main config can be edited in the main.py file and the controls can be edited in the controls.py file.
+The configations can be edited in the configs.ini file. This file is created the first time the program is executed.
+
+You need to change the "os" field depending on the OS that you are using (Windows, or Linux).
 
 ### Default controls
 - Right Alt: Add page

@@ -9,8 +9,11 @@ __pycache__/
 
 # C extensions
 *.so
+
+#scan and config files
 *.pdf
 *.png
+*.ini
 
 # Distribution / packaging
 .Python

@@ -9,8 +9,15 @@ __pycache__/
 
 # C extensions
 *.so
+
+#scan and config files
 *.pdf
 *.png
+*.ini
+
+#temp dirs
+.temp
+pdf_output
 
 # Distribution / packaging
 .Python

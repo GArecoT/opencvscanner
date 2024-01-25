@@ -1,24 +1,46 @@
 import cv2
 from controls import controls
 from imageprocess import image_process
-cam_index = 0
-focus = 400.0
-contrast = 64.0
-saturation = 30
-global rotation
-rotation = 270
+from createConfig import createConfig, checkConfig, creatFolders
+import configparser
+
+#Config file
+config = configparser.ConfigParser()
+createConfig(config)
+checkConfig(config)
+config.read('./config.ini')
+
+#craete dirs
+creatFolders()
+
+#load default values
+cam_index = int(config.get('camera_default', 'cam_index')) 
+focus = float(config.get('camera_default', 'focus'))
+contrast = float(config.get('camera_default', 'contrast'))
+saturation = float(config.get('camera_default', 'saturation'))
+rotation = float(config.get('camera_default', 'rotation'))
+fps = float(config.get('camera_default', 'fps'))
+width = int(config.get('camera_default', 'width'))
+height = int(config.get('camera_default', 'height'))
 
 global count
 count = 0
 
+#set linux or windows camera API
+if(config.get('camera_default', 'os') == 'windows'):
+    vid = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
+elif(config.get('camera_default', 'os') == 'linux'):
+    vid = cv2.VideoCapture(cam_index, cv2.CAP_V4L2)
+else:
+    print("Invalid OS value. Try windows or linux.")
+    exit() 
+
 #set initial paramethers
-#vid = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW) #Comment this line on Linux
-vid = cv2.VideoCapture(cam_index, cv2.CAP_V4L2) #Comment this line on Windows
-vid.set(cv2.CAP_PROP_FPS, 60.0)
-vid.set(cv2.CAP_PROP_POS_FRAMES, 60.0)
-vid.set(cv2.CAP_PROP_FRAME_COUNT, 60.0)
-vid.set(cv2.CAP_PROP_FRAME_WIDTH, 2048)
-vid.set(cv2.CAP_PROP_FRAME_HEIGHT, 1536)
+vid.set(cv2.CAP_PROP_FPS, fps)
+vid.set(cv2.CAP_PROP_POS_FRAMES, fps)
+vid.set(cv2.CAP_PROP_FRAME_COUNT, fps)
+vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 vid.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('M', 'J', 'P', 'G'))
 vid.set(cv2.CAP_PROP_AUTOFOCUS, 0.0)
 vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.0)
@@ -38,7 +60,7 @@ while (True):
     if keys == ord('q'):
         break
     else:
-        temp, count = controls(vid, keys, cut, count)
+        temp, count = controls(vid, keys, cut, count, config)
         rotation += temp
         if rotation == 360:
             rotation = 0

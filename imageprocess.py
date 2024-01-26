@@ -16,7 +16,7 @@ def image_process(frame, rotation):
     kernel = np.ones((5,5))
     imgDial = cv2.dilate(thresh,kernel,iterations=2)
     thresh = cv2.erode(imgDial,kernel,iterations=1)
-    contours, _ = cv2.findContours(image=thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(image=thresh, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE)
 
     image_copy = frame.copy()
     sorted_contours= sorted(contours, key=cv2.contourArea, reverse= True)

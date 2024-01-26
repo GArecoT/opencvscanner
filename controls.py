@@ -3,6 +3,38 @@ from PIL import Image
 import os
 from tkinter import simpledialog
 from tkinter import messagebox
+from threading import Thread
+
+def saveFile(count):
+    images = []
+    for i in range(count):
+        temp = Image.open("./.temp/"+str(i)+".png")
+        images.append(temp)
+    
+    if(len(images) > 0):
+        answer = simpledialog.askstring("Input", "File Name")
+        
+        #Check if file exists
+        if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
+            print("File already exists")
+            messagebox.showinfo("ERROR","File already exists")
+            saveFile(count)
+        else:
+            pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
+            
+            images[0].save(
+                pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
+            )
+            
+            print("File " + str(answer).upper() + ".pdf is saved!")    
+
+            for filename in os.listdir('./.temp/'):
+                if os.path.isfile(os.path.join('./.temp/', filename)):
+                 os.remove(os.path.join('./.temp/', filename))
+    else:
+            messagebox.showinfo("ERROR","No page scanned")
+
+
 def controls(vid, key, cut, count, config):
         if key == ord(config.get('controls','toggleautoexposure')):
             if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
@@ -78,33 +110,9 @@ def controls(vid, key, cut, count, config):
             print("Page " + str(count) + " saved")
         #save file
         if key == int(config.get('controls','savefile')): #this is the keycode
-            images = []
-            for i in range(count):
-                temp = Image.open("./.temp/"+str(i)+".png")
-                images.append(temp)
-            
-            if(len(images) > 0):
-                answer = simpledialog.askstring("Input", "File Name")
-                
-                #Check if file exists
-                if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
-                    print("File already exists")
-                    messagebox.showinfo("ERROR","File already exists")                
-                else:
-                    pdf_path = "./pdf_output/"+str(answer).upper()+".pdf"
-                    
-                    images[0].save(
-                        pdf_path, "PDF" ,resolution=100.0, save_all=True, append_images=images[1:]
-                    )
-                    
-                    count = 0
-                    print("File " + str(answer).upper() + ".pdf is saved!")    
-
-                    for filename in os.listdir('./.temp/'):
-                        if os.path.isfile(os.path.join('./.temp/', filename)):
-                         os.remove(os.path.join('./.temp/', filename))
-            else:
-                    messagebox.showinfo("ERROR","No page scanned")                
+            x = Thread(target=saveFile, args=(count,))
+            x.start()
+            count = 0
         if key == ord(config.get('controls','rotate-90')):
             return -90, count
         if key == ord(config.get('controls','rotate+90')):

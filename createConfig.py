@@ -43,7 +43,7 @@ def creatFolders():
 
 def checkConfig(config):
     if(os.path.isfile("./config.ini") == True):
-        config.readfp(open('./config.ini'))
+        config.read_file(open('./config.ini'))
         try:
             config.get('camera_default', 'os')
             config.get('camera_default', 'cam_index')

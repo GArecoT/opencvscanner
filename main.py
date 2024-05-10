@@ -1,4 +1,5 @@
-import cv2
+from tkinter import NW, Tk, Canvas, PhotoImage
+import cv2 
 from controls import controls
 from imageprocess import image_process
 from createConfig import createConfig, checkConfig, creatFolders
@@ -22,7 +23,6 @@ rotation = float(config.get('camera_default', 'rotation'))
 fps = float(config.get('camera_default', 'fps'))
 width = int(config.get('camera_default', 'width'))
 height = int(config.get('camera_default', 'height'))
-
 global count
 count = 0
 
@@ -50,26 +50,39 @@ vid.set(cv2.CAP_PROP_FOCUS, focus)
 vid.set(cv2.CAP_PROP_CONTRAST, contrast)
 vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
+#handle rotation and add page
+def handleRotation(response):
+    global count
+    global rotation 
+    temp = response[0]
+    count = response[1]
+    rotation += temp
+    if rotation == 360:
+        rotation = 0
+    elif rotation == -90:
+        rotation = 270
 
-while (True):
+def photo_image(img):
+    h, w = img.shape[:2]
+    data = f'P6 {w} {h} 255 '.encode() + img[..., ::-1].tobytes()
+    return PhotoImage(width=w, height=h, data=data, format='PPM')
+
+def update():
     ret, frame = vid.read()
     image_copy, cut = image_process(frame, rotation)
 
+    root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config)))
+    if ret:
+        photo = photo_image(image_copy)
+        canvas.create_image(0, 0, image=photo, anchor=NW)
+        canvas.image = photo
+    root.after(15, update)
 
-    keys = cv2.waitKey(1) & 0xFF
-    if keys == ord('q'):
-        break
-    else:
-        temp, count = controls(vid, keys, cut, count, config)
-        rotation += temp
-        if rotation == 360:
-            rotation = 0
-        elif rotation == -90:
-            rotation = 270
-
-    # render window
-    cv2.namedWindow('custom window', cv2.WINDOW_KEEPRATIO)
-    cv2.imshow('custom window', image_copy)
-    #cv2.imshow('None approximation', image_copy)
+#Start Loop
+root = Tk()
+root.title("OpenCV Scanner")
+canvas = Canvas(root, width=1200, height=700)
+canvas.pack()
+update()
+root.mainloop()
 vid.release()
-cv2.destroyAllWindows()

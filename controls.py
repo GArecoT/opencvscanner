@@ -36,7 +36,7 @@ def saveFile(count):
 
 
 def controls(vid, key, cut, count, config):
-        if key == ord(config.get('controls','toggleautoexposure')):
+        if key.char == (config.get('controls','toggleautoexposure')):
             if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
                 vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1.0)
                 print("Auto Exposure Off")
@@ -45,7 +45,7 @@ def controls(vid, key, cut, count, config):
                 print("Auto Exposure On")
 
         #Toggle autofocus
-        if key == ord(config.get('controls','toggleautofocus')):
+        if key.char == (config.get('controls','toggleautofocus')):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:
                 vid.set(cv2.CAP_PROP_AUTOFOCUS, 1.0)
                 print("Autofocus on")
@@ -54,78 +54,78 @@ def controls(vid, key, cut, count, config):
                 print("Autofocus off")
 
         #Control Focus
-        if key == ord(config.get('controls','focus-')):
+        if key.char == (config.get('controls','focus-')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             vid.set(cv2.CAP_PROP_FOCUS, focus-5)
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             print("FOCUS: " + str(focus))
-        if key == ord(config.get('controls','focus+')):
+        if key.char == (config.get('controls','focus+')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             vid.set(cv2.CAP_PROP_FOCUS, focus+5)
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             print("FOCUS: " + str(focus))
         
         #Control exposure
-        if key == ord(config.get('controls','exposure-')):
+        if key.char == (config.get('controls','exposure-')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure-100)
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             print("EXPOSURE: " + str(exposure))
-        if key == ord(config.get('controls','exposure+')):
+        if key.char == (config.get('controls','exposure+')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure+100)
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             print("EXPOSURE: " + str(exposure))
 
         #Control brightness
-        if key == ord(config.get('controls','brightness-')):
+        if key.char == (config.get('controls','brightness-')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness-5)
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             print("BRIGHTNESS: " + str(brightness))
-        if key == ord(config.get('controls','brightness+')):
+        if key.char == (config.get('controls','brightness+')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness+5)
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             print("BRIGHTNESS: " + str(brightness))
 
         #Control gain 
-        if key == ord(config.get('controls','gain-')):
+        if key.char == (config.get('controls','gain-')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
             vid.set(cv2.CAP_PROP_GAIN, gain-5)
             gain = vid.get(cv2.CAP_PROP_GAIN)
             print("GAIN: " + str(gain))
-        if key == ord(config.get('controls','gain+')):
+        if key.char == (config.get('controls','gain+')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
             vid.set(cv2.CAP_PROP_GAIN, gain+5)
             gain = vid.get(cv2.CAP_PROP_GAIN)
             print("GAIN: " + str(gain))
 
         #Control contrast 
-        if key == ord(config.get('controls','contrast-')):
+        if key.char == (config.get('controls','contrast-')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             vid.set(cv2.CAP_PROP_CONTRAST, contrast-5)
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             print("CONTRAST: " + str(contrast))
-        if key == ord(config.get('controls','contrast+')):
+        if key.char == (config.get('controls','contrast+')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             print("CONTRAST: " + str(contrast))
         
         #add page
-        if key == int(config.get('controls','addpage')): #this is the key code
+        if key.keycode == int(config.get('controls','addpage')): #this is the key code
             cv2.imwrite("./.temp/" + str(str(count) + ".png"),cut)
             count = count + 1
             print("Page " + str(count) + " saved")
         #save file
-        if key == int(config.get('controls','savefile')): #this is the keycode
+        if key.keycode == int(config.get('controls','savefile')): #this is the keycode
             x = Thread(target=saveFile, args=(count,))
             x.start()
             count = 0
-        if key == ord(config.get('controls','rotate-90')):
+        if key.char == (config.get('controls','rotate-90')):
             return -90, count
-        if key == ord(config.get('controls','rotate+90')):
+        if key.char == (config.get('controls','rotate+90')):
             return 90, count
 
         return 0, count

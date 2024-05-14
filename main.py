@@ -50,6 +50,20 @@ vid.set(cv2.CAP_PROP_FOCUS, focus)
 vid.set(cv2.CAP_PROP_CONTRAST, contrast)
 vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
+#set aspect ratio
+def resize_image():
+    width = canvas.winfo_width()
+    height = int(canvas.winfo_width() / aspect_ratio)
+    if(height < 1):
+        height = 1
+
+    if(width > canvas.winfo_height()):
+        width = canvas.winfo_height()
+        height = int(canvas.winfo_height() / aspect_ratio)
+
+   
+    return width, height
+
 #handle rotation and add page
 def handleRotation(response):
     global count
@@ -65,24 +79,28 @@ def handleRotation(response):
 def photo_image(img):
     h, w = img.shape[:2]
     data = f'P6 {w} {h} 255 '.encode() + img[..., ::-1].tobytes()
+    print(w, h)
     return PhotoImage(width=w, height=h, data=data, format='PPM')
 
 def update():
     ret, frame = vid.read()
+    frame = cv2.resize(frame, (resize_image()))
     image_copy, cut = image_process(frame, rotation)
 
     root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config)))
     if ret:
         photo = photo_image(image_copy)
-        canvas.create_image(0, 0, image=photo, anchor=NW)
+        canvas.create_image(canvas.winfo_width()/2, 20, image=photo, anchor='n')
         canvas.image = photo
     root.after(15, update)
 
+
 #Start Loop
+aspect_ratio = 16/9
 root = Tk()
 root.title("OpenCV Scanner")
-canvas = Canvas(root, width=1200, height=700)
-canvas.pack()
+canvas = Canvas(root)
+canvas.pack(fill="both", expand=True)
 update()
 root.mainloop()
 vid.release()

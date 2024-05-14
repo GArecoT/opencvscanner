@@ -129,10 +129,10 @@ canvas = Canvas(root)
 config_btn = ttk.Button(topFrame, text='⚙')
 config_btn.pack(side="left")
 
-notification = Label(canvas, fg='green', bg='white') 
+notification = Label(canvas, fg='#f5c2e7', bg='#313244') 
 
 update()
-topFrame.pack(fill="x")
+# topFrame.pack(fill="x")
 canvas.pack(fill="both", expand=True)
 notification.place(x=10,y=10)
 
@@ -141,5 +141,9 @@ canvas.bind("<Button>", handle_zoom)
 canvas.bind('<ButtonPress-1>', lambda event: canvas.scan_mark(event.x, event.y))
 canvas.bind("<B1-Motion>", lambda event: canvas.scan_dragto(event.x, event.y, gain=1))
 
+
+#
+root.configure(background='#1e1e2e')
+canvas.configure(background='#1e1e2e')
 root.mainloop()
 vid.release()

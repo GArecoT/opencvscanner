@@ -1,4 +1,6 @@
-from tkinter import NW, Tk, Canvas, PhotoImage
+from tkinter import Message, Tk, Canvas, Button, Frame, Label, ttk
+from PIL import Image, ImageTk 
+from ttkthemes import ThemedTk
 import cv2 
 from controls import controls
 from imageprocess import image_process
@@ -50,6 +52,10 @@ vid.set(cv2.CAP_PROP_FOCUS, focus)
 vid.set(cv2.CAP_PROP_CONTRAST, contrast)
 vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
+
+aspect_ratio = width/height
+zoom_factor = 1
+
 #set aspect ratio
 def resize_image():
     width = canvas.winfo_width()
@@ -64,6 +70,17 @@ def resize_image():
    
     return width, height
 
+
+def handle_zoom(event):
+    print(event)
+    global zoom_factor
+    if(event.num == 4):
+        zoom_factor += 1
+    if(event.num == 5):
+        if(zoom_factor > 1):
+            zoom_factor -= 1
+
+
 #handle rotation and add page
 def handleRotation(response):
     global count
@@ -77,30 +94,52 @@ def handleRotation(response):
         rotation = 270
 
 def photo_image(img):
-    h, w = img.shape[:2]
-    data = f'P6 {w} {h} 255 '.encode() + img[..., ::-1].tobytes()
-    print(w, h)
-    return PhotoImage(width=w, height=h, data=data, format='PPM')
+    w, h = resize_image()
+    imagePIL = Image.fromarray(img).crop()
+    imgtk = ImageTk.PhotoImage(image = imagePIL)
+
+    #WARNING: This is shit, change it in the future
+    imgtk = imgtk._PhotoImage__photo.zoom(zoom_factor)
+    return imgtk
 
 def update():
+    global notification
     ret, frame = vid.read()
     frame = cv2.resize(frame, (resize_image()))
     image_copy, cut = image_process(frame, rotation)
 
-    root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config)))
+    root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config, notification)))
     if ret:
         photo = photo_image(image_copy)
-        canvas.create_image(canvas.winfo_width()/2, 20, image=photo, anchor='n')
+        canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
         canvas.image = photo
     root.after(15, update)
 
 
-#Start Loop
-aspect_ratio = 16/9
-root = Tk()
+#Build main ui
+root = ThemedTk(theme='arc')
+
+print(root.get_themes())
+
 root.title("OpenCV Scanner")
+bottomFrame = Frame(root)
+topFrame = Frame(root)
 canvas = Canvas(root)
-canvas.pack(fill="both", expand=True)
+
+config_btn = ttk.Button(topFrame, text='⚙')
+config_btn.pack(side="left")
+
+notification = Label(canvas, fg='green', bg='white') 
+
 update()
+topFrame.pack(fill="x")
+canvas.pack(fill="both", expand=True)
+notification.place(x=10,y=10)
+
+#Bind zoom and pan
+canvas.bind("<Button>", handle_zoom) 
+canvas.bind('<ButtonPress-1>', lambda event: canvas.scan_mark(event.x, event.y))
+canvas.bind("<B1-Motion>", lambda event: canvas.scan_dragto(event.x, event.y, gain=1))
+
 root.mainloop()
 vid.release()

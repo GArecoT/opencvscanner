@@ -117,9 +117,7 @@ def update():
 
 
 #Build main ui
-root = ThemedTk(theme='arc')
-
-print(root.get_themes())
+root = Tk()
 
 root.title("OpenCV Scanner")
 bottomFrame = Frame(root)

@@ -37,7 +37,7 @@ def saveFile(count, notification):
 
 def controls(vid, key, cut, count, config, notification):
 
-        if key.char == (config.get('controls','toggleautoexposure')):
+        if key.keysym == (config.get('controls','toggleautoexposure')):
             if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
                 vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1.0)
                 notification.config(text="Auto Exposure Off")
@@ -46,7 +46,7 @@ def controls(vid, key, cut, count, config, notification):
                 notification.config(text="Auto Exposure On")
 
         #Toggle autofocus
-        if key.char == (config.get('controls','toggleautofocus')):
+        if key.keysym == (config.get('controls','toggleautofocus')):
             if vid.get(cv2.CAP_PROP_AUTOFOCUS) == 0.0:
                 vid.set(cv2.CAP_PROP_AUTOFOCUS, 1.0)
                 notification.config(text="Autofocus on")
@@ -55,78 +55,79 @@ def controls(vid, key, cut, count, config, notification):
                 notification.config(text="Autofocus off")
 
         #Control Focus
-        if key.char == (config.get('controls','focus-')):
+        if key.keysym == (config.get('controls','focus-')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             vid.set(cv2.CAP_PROP_FOCUS, focus-5)
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             notification.config(text="FOCUS: " + str(focus))
-        if key.char == (config.get('controls','focus+')):
+        if key.keysym == (config.get('controls','focus+')):
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             vid.set(cv2.CAP_PROP_FOCUS, focus+5)
             focus = vid.get(cv2.CAP_PROP_FOCUS)
             notification.config(text="FOCUS: " + str(focus))
         
         #Control exposure
-        if key.char == (config.get('controls','exposure-')):
+        if key.keysym == (config.get('controls','exposure-')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure-100)
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             notification.config(text="EXPOSURE: " + str(exposure))
-        if key.char == (config.get('controls','exposure+')):
+        if key.keysym == (config.get('controls','exposure+')):
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             vid.set(cv2.CAP_PROP_EXPOSURE, exposure+100)
             exposure = vid.get(cv2.CAP_PROP_EXPOSURE)
             notification.config(text="EXPOSURE: " + str(exposure))
 
         #Control brightness
-        if key.char == (config.get('controls','brightness-')):
+        if key.keysym == (config.get('controls','brightness-')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness-5)
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             notification.config(text="BRIGHTNESS: " + str(brightness))
-        if key.char == (config.get('controls','brightness+')):
+        if key.keysym == (config.get('controls','brightness+')):
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             vid.set(cv2.CAP_PROP_BRIGHTNESS, brightness+5)
             brightness = vid.get(cv2.CAP_PROP_BRIGHTNESS)
             notification.config(text="BRIGHTNESS: " + str(brightness))
 
         #Control gain 
-        if key.char == (config.get('controls','gain-')):
+        if key.keysym == (config.get('controls','gain-')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
             vid.set(cv2.CAP_PROP_GAIN, gain-5)
             gain = vid.get(cv2.CAP_PROP_GAIN)
             notification.config(text="GAIN: " + str(gain))
-        if key.char == (config.get('controls','gain+')):
+        if key.keysym == (config.get('controls','gain+')):
             gain = vid.get(cv2.CAP_PROP_GAIN)
             vid.set(cv2.CAP_PROP_GAIN, gain+5)
             gain = vid.get(cv2.CAP_PROP_GAIN)
             notification.config(text="GAIN: " + str(gain))
 
         #Control contrast 
-        if key.char == (config.get('controls','contrast-')):
+        if key.keysym == (config.get('controls','contrast-')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             vid.set(cv2.CAP_PROP_CONTRAST, contrast-5)
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             notification.config(text="CONTRAST: " + str(contrast))
-        if key.char == (config.get('controls','contrast+')):
+        if key.keysym == (config.get('controls','contrast+')):
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             vid.set(cv2.CAP_PROP_CONTRAST, contrast+5)
             contrast = vid.get(cv2.CAP_PROP_CONTRAST)
             notification.config(text="CONTRAST: " + str(contrast))
         
         #add page
-        if key.keycode == int(config.get('controls','addpage')): #this is the key code
+        if key.keysym == config.get('controls','addpage'): #this is the key code
             cv2.imwrite("./.temp/" + str(str(count) + ".png"),cut)
             count = count + 1
             notification.config(text="Page " + str(count) + " saved")
         #save file
-        if key.keycode == int(config.get('controls','savefile')): #this is the keycode
-            x = Thread(target=saveFile, args=(count, notification))
-            x.start()
+        if key.keysym == config.get('controls','savefile'): #this is the keycode
+            # x = Thread(target=saveFile, args=(count, notification))
+            x = saveFile(count, notification)
+            # x.start()
             count = 0
-        if key.char == (config.get('controls','rotate-90')):
+        if key.keysym == (config.get('controls','rotate-90')):
             return -90, count
-        if key.char == (config.get('controls','rotate+90')):
+        if key.keysym == (config.get('controls','rotate+90')):
             return 90, count
 
         return 0, count

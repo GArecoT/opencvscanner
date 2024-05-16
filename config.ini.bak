@@ -1,0 +1,29 @@
+[camera_default]
+os = linux 
+cam_index = 3
+focus = 435.0
+contrast = 100.0
+saturation = 15
+rotation = 90 
+fps = 60.0
+width = 3264
+height = 2448
+
+[controls]
+toggleautoexposure = e
+toggleautofocus = f
+exposure- = u
+exposure+ = i
+brightness- = o
+brightness+ = p
+focus- = bracketright
+focus+ = bracketleft
+gain- = j
+gain+ = k
+contrast- = l
+contrast+ = semicolon
+rotate-90 = comma
+rotate+90 = period
+addpage = backslash 
+savefile = Menu 
+

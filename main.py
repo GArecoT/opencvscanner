@@ -103,12 +103,12 @@ def photo_image(img):
     return imgtk
 
 def update():
+    global cut
     global notification
     ret, frame = vid.read()
     frame = cv2.resize(frame, (resize_image()))
     image_copy, cut = image_process(frame, rotation)
 
-    root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config, notification)))
     if ret:
         photo = photo_image(image_copy)
         canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
@@ -138,6 +138,7 @@ notification.place(x=10,y=10)
 canvas.bind("<Button>", handle_zoom) 
 canvas.bind('<ButtonPress-1>', lambda event: canvas.scan_mark(event.x, event.y))
 canvas.bind("<B1-Motion>", lambda event: canvas.scan_dragto(event.x, event.y, gain=1))
+root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config, notification)))
 
 
 #

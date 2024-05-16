@@ -95,7 +95,10 @@ def handleRotation(response):
 
 def photo_image(img):
     w, h = resize_image()
-    imagePIL = Image.fromarray(img).crop()
+    if(rotation == 90 or 270):
+        imagePIL = Image.fromarray(img).resize((h,w))
+    else:
+        imagePIL = Image.fromarray(img).resize((w,h))
     imgtk = ImageTk.PhotoImage(image = imagePIL)
 
     #WARNING: This is shit, change it in the future
@@ -106,7 +109,6 @@ def update():
     global cut
     global notification
     ret, frame = vid.read()
-    frame = cv2.resize(frame, (resize_image()))
     image_copy, cut = image_process(frame, rotation)
 
     if ret:

@@ -1,7 +1,6 @@
 from threading import Thread
 from tkinter import Message, Tk, Canvas, Button, Frame, Label, ttk
 from PIL import Image, ImageTk 
-from ttkthemes import ThemedTk
 import cv2 
 from controls import controls
 from imageprocess import image_process

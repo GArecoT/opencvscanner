@@ -1,3 +1,4 @@
+from threading import Thread
 from tkinter import Message, Tk, Canvas, Button, Frame, Label, ttk
 from PIL import Image, ImageTk 
 from ttkthemes import ThemedTk
@@ -94,8 +95,9 @@ def handleRotation(response):
         rotation = 270
 
 def photo_image(img):
+    global rotation
     w, h = resize_image()
-    if(rotation == 90 or 270):
+    if(int(rotation) == 90 or int(rotation) == 270):
         imagePIL = Image.fromarray(img).resize((h,w))
     else:
         imagePIL = Image.fromarray(img).resize((w,h))
@@ -138,8 +140,8 @@ notification.place(x=10,y=10)
 
 #Bind zoom and pan
 canvas.bind("<Button>", handle_zoom) 
-canvas.bind('<ButtonPress-1>', lambda event: canvas.scan_mark(event.x, event.y))
-canvas.bind("<B1-Motion>", lambda event: canvas.scan_dragto(event.x, event.y, gain=1))
+canvas.bind('<ButtonPress-1>', lambda event: Thread(target=(canvas.scan_mark(event.x, event.y))))
+canvas.bind("<B1-Motion>", lambda event: Thread(target=canvas.scan_dragto(event.x, event.y, gain=1)))
 root.bind("<Key>",lambda event: handleRotation(controls(vid, event, cut, count, config, notification)))
 
 

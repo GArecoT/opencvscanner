@@ -1,8 +1,7 @@
 import cv2
 from PIL import Image 
 import os
-from tkinter import simpledialog
-from tkinter import messagebox
+from tkinter import simpledialog, messagebox, Tk
 from threading import Thread
 
 def saveFile(count, notification):
@@ -12,7 +11,11 @@ def saveFile(count, notification):
         images.append(temp)
     
     if(len(images) > 0):
-        answer = simpledialog.askstring("Input", "File Name")
+        dialogWindow = Tk()
+        dialogWindow.withdraw()
+        answer = simpledialog.askstring("Input", "File Name", parent= dialogWindow)
+        dialogWindow.destroy()
+
         
         #Check if file exists
         if(os.path.isfile("./pdf_output/"+str(answer).upper()+".pdf") == True):
@@ -121,8 +124,8 @@ def controls(vid, key, cut, count, config, notification):
             notification.config(text="Page " + str(count) + " saved")
         #save file
         if key.keysym == config.get('controls','savefile'): #this is the keycode
-            # x = Thread(target=saveFile, args=(count, notification))
-            x = saveFile(count, notification)
+            Thread(target=saveFile, args=(count, notification)).start()
+        #saveFile(count, notification)
             # x.start()
             count = 0
         if key.keysym == (config.get('controls','rotate-90')):

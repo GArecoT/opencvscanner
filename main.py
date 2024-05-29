@@ -50,13 +50,13 @@ def photo_image(img):
     global rotation
     w, h = resize_image()
     if(int(rotation) == 90 or int(rotation) == 270):
-        imagePIL = Image.fromarray(img).resize((h,w))
+        imagePIL = Image.fromarray(img).resize((h*zoom_factor,w*zoom_factor))
     else:
-        imagePIL = Image.fromarray(img).resize((w,h))
+        imagePIL = Image.fromarray(img).resize((w * zoom_factor,h*zoom_factor))
     imgtk = ImageTk.PhotoImage(image = imagePIL)
 
     #WARNING: This is shit, change it in the future
-    imgtk = imgtk._PhotoImage__photo.zoom(zoom_factor)
+    imgtk = imgtk._PhotoImage__photo.zoom(1)
     return imgtk
 
 def update():

@@ -7,6 +7,7 @@ from imageprocess import image_process
 from createConfig import createConfig, checkConfig, creatFolders
 import configparser
 from listCamera import createCameraList
+from configScreen import spawnConfig
 
 # Functions
 #set aspect ratio
@@ -70,6 +71,7 @@ def update():
         canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
         canvas.image = photo
     root.after(15, update)
+
 #set camera
 def set_camera(cam_index):
     print(cam_index)
@@ -82,6 +84,7 @@ def set_camera(cam_index):
     else:
         print("Invalid OS value. Try windows or linux.")
         exit() 
+
 #camera change
 def change_camera(*args):
     temp = selectedCamera.get().split(':')
@@ -90,7 +93,6 @@ def change_camera(*args):
         update()
     except:
         messagebox.showerror('Error',"Camera not acessible. Please change the index.")
-
 
 # Start setup
 #list cameras
@@ -158,7 +160,7 @@ select = OptionMenu(topFrame, selectedCamera, *cameraListFormated)
 select.config(fg='#fff', bg='#313244', highlightbackground = "#1e1e2e", highlightcolor= "#1e1e2e", bd=0, activebackground='#424242', activeforeground='#f5c2e7')
 select['menu'].config(fg='#fff', bg='#313244', bd=0, activebackground='#424242', activeforeground='#f5c2e7')
 
-config_btn = Button(topFrame, text='⚙', fg='#f5c2e7', bg='#313244', activebackground='#424242', activeforeground='#f5c2e7', highlightbackground = "#1e1e2e", highlightcolor= "#1e1e2e", bd=0)
+config_btn = Button(topFrame, text='⚙', fg='#f5c2e7', bg='#313244', activebackground='#424242', activeforeground='#f5c2e7', highlightbackground = "#1e1e2e", highlightcolor= "#1e1e2e", bd=0, command=spawnConfig)
 
 config_btn.pack(side="left")
 select.pack(side='left')

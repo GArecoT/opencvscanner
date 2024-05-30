@@ -61,10 +61,17 @@ def photo_image(img):
     return imgtk
 
 def update():
+    global isUpdating
+    isUpdating = True
     global cut
     global notification
     ret, frame = vid.read()
-    image_copy, cut = image_process(frame, rotation)
+    try:
+        image_copy, cut = image_process(frame, rotation)
+    except:
+        messagebox.showerror('Error',"Camera not acessible. Please change the index.")
+        isUpdating = False
+        return
 
     if ret:
         photo = photo_image(image_copy)
@@ -87,12 +94,14 @@ def set_camera(cam_index):
 
 #camera change
 def change_camera(*args):
+    global isUpdating
     temp = selectedCamera.get().split(':')
     set_camera(int(temp[0]))
-    try:
-        update()
-    except:
-        messagebox.showerror('Error',"Camera not acessible. Please change the index.")
+    if(isUpdating == False):
+        try:
+            update()
+        except:
+            messagebox.showerror('Error',"Camera not acessible. Please change the index.")
 
 # Start setup
 #list cameras
@@ -122,6 +131,8 @@ width = int(config.get('camera_default', 'width'))
 height = int(config.get('camera_default', 'height'))
 global count
 count = 0
+
+isUpdating = False
 
 #set default camera
 set_camera(cam_index)

@@ -9,6 +9,7 @@ import configparser
 from listCamera import createCameraList
 from configScreen import spawnConfig
 
+canvasImage = None
 # Functions
 #set aspect ratio
 def resize_image():
@@ -61,7 +62,7 @@ def photo_image(img):
     return imgtk
 
 def update():
-    global isUpdating
+    global isUpdating, canvasImage
     isUpdating = True
     global cut
     global notification
@@ -74,9 +75,14 @@ def update():
         return
 
     if ret:
-        photo = photo_image(image_copy)
-        canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
-        canvas.image = photo
+        if canvasImage:
+            photo = photo_image(image_copy)
+            canvas.itemconfig(canvasImage, image=photo)
+            canvas.image = photo
+        else:
+            photo = photo_image(image_copy)
+            canvasImage = canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
+            canvas.image = photo
     root.after(15, update)
 
 #set camera

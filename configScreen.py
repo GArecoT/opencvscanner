@@ -880,7 +880,7 @@ def spawnConfig():
     rotationSelectCanvas.pack(side="left", padx=5)
     canvas2.pack(fill="x", side="top", pady=10, padx=10)
     labelShortcuts.pack(side="top", anchor="w", ipadx=10, ipady=20)
-    expositionEntryCanvas.pack(side="left", padx=20)
+    expositionEntryCanvas.pack(side="left")
     exposureMinusEntryCanvas.pack(side="left", padx=20)
     exposurePlusEntryCanvas.pack(side="left", padx=20)
     brightnessMinusEntryCanvas.pack(side="left", padx=20)
@@ -904,4 +904,5 @@ def spawnConfig():
     cancel_btn.pack(side="right")
     canvasControls.pack(fill="x", side="top", pady=10, padx=10)
 
+    root.attributes("-type", "dialog")
     root.mainloop()

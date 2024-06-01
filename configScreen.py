@@ -745,6 +745,35 @@ def spawnConfig():
     labelRotatePlusBtn.pack()
     rotatePlus_btn.pack(side="left")
 
+    # redoPage
+    redoPageEntryCanvas = Canvas(canvas5)
+    redoPageEntryCanvas.configure(
+        background="#1e1e2e",
+        bd=0,
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+    )
+    labelRedoPageBtn = Label(
+        redoPageEntryCanvas, text="Redo Page", fg="#fff", bg="#1e1e2e"
+    )
+    redoPage_btn = Button(
+        redoPageEntryCanvas,
+        text=str(config.get("controls", "redoPage")),
+        fg="#f5c2e7",
+        bg="#313244",
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+        bd=0,
+        anchor="w",
+    )
+    redoPage_btn.config(
+        command=lambda: handleInput(root, redoPage_btn, config, "redoPage"),
+    )
+    labelRedoPageBtn.pack()
+    redoPage_btn.pack(side="left")
+
     # AddPage
     addPageEntryCanvas = Canvas(canvas5)
     addPageEntryCanvas.configure(
@@ -867,6 +896,7 @@ def spawnConfig():
     rotateMinusEntryCanvas.pack(side="left", padx=20)
     rotatePlusEntryCanvas.pack(side="left", padx=20)
     canvas4.pack(fill="x", side="top", pady=10, padx=10)
+    redoPageEntryCanvas.pack(side="left")
     addPageEntryCanvas.pack(side="left")
     saveFileEntryCanvas.pack(side="left", padx=20)
     canvas5.pack(fill="x", side="top", pady=10, padx=10)

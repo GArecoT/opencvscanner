@@ -1,4 +1,5 @@
 from threading import Thread
+import time
 from tkinter import messagebox, Tk, Canvas, Button, Frame, Label, OptionMenu, StringVar
 from PIL import Image, ImageTk 
 import cv2 
@@ -9,7 +10,6 @@ import configparser
 from listCamera import createCameraList
 from configScreen import spawnConfig
 
-canvasImage = None
 # Functions
 #set aspect ratio
 def resize_image():
@@ -27,9 +27,8 @@ def resize_image():
 
 
 def handle_zoom(event):
-    print(event)
     global zoom_factor
-    if(event.num == 4):
+    if(event.num == 4 and zoom_factor < 20):
         zoom_factor += 1
     if(event.num == 5):
         if(zoom_factor > 1):
@@ -52,9 +51,9 @@ def photo_image(img):
     global rotation
     w, h = resize_image()
     if(int(rotation) == 90 or int(rotation) == 270):
-        imagePIL = Image.fromarray(img).resize((h*zoom_factor,w*zoom_factor))
+        imagePIL = Image.fromarray(img).resize((int((h*zoom_factor)/10),int((w*zoom_factor)/10)))
     else:
-        imagePIL = Image.fromarray(img).resize((w * zoom_factor,h*zoom_factor))
+        imagePIL = Image.fromarray(img).resize((int((w * zoom_factor)/10),int((h*zoom_factor)/10)))
     imgtk = ImageTk.PhotoImage(image = imagePIL)
 
     #WARNING: This is shit, change it in the future
@@ -62,28 +61,37 @@ def photo_image(img):
     return imgtk
 
 def update():
-    global isUpdating, canvasImage
-    isUpdating = True
-    global cut
-    global notification
-    ret, frame = vid.read()
-    try:
-        image_copy, cut = image_process(frame, rotation)
-    except:
-        messagebox.showerror('Error',"Camera not acessible. Please change the index.")
-        isUpdating = False
-        return
+    while True:
+        global prev_time, new_time
+        global isUpdating, canvasImage
+        isUpdating = True
+        global cut
+        global notification
+        ret, frame = vid.read()
+        try:
+            image_copy, cut = image_process(frame, rotation)
+        except:
+            messagebox.showerror('Error',"Camera not acessible. Please change the index.")
+            isUpdating = False
+            return
 
-    if ret:
-        if canvasImage:
-            photo = photo_image(image_copy)
-            canvas.itemconfig(canvasImage, image=photo)
-            canvas.image = photo
-        else:
-            photo = photo_image(image_copy)
-            canvasImage = canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
-            canvas.image = photo
-    root.after(15, update)
+        if ret:
+            if canvasImage:
+                photo = photo_image(image_copy)
+                canvas.itemconfig(canvasImage, image=photo)
+                canvas.image = photo
+            else:
+                photo = photo_image(image_copy)
+                canvasImage = canvas.create_image(canvas.winfo_width()/2, 0, image=photo, anchor='n')
+                canvas.image = photo
+
+        new_time = time.time()
+        fps = int(1/(new_time - prev_time)) 
+        print(fps)
+        prev_time = time.time()
+
+        if(fps > 0 and 1000/fps < 0.015):
+            time.sleep(1000/fps - 0.015)
 
 #set camera
 def set_camera(cam_index):
@@ -105,7 +113,8 @@ def change_camera(*args):
     set_camera(int(temp[0]))
     if(isUpdating == False):
         try:
-            update()
+            prev_time = time.time()
+            Thread(target=update).start()
         except:
             messagebox.showerror('Error',"Camera not acessible. Please change the index.")
 
@@ -138,7 +147,10 @@ height = int(config.get('camera_default', 'height'))
 global count
 count = 0
 
+canvasImage = None
 isUpdating = False
+prev_time = 0
+new_time = 0
 
 #set default camera
 set_camera(cam_index)
@@ -159,7 +171,7 @@ vid.set(cv2.CAP_PROP_CONTRAST, contrast)
 vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
 aspect_ratio = width/height
-zoom_factor = 1
+zoom_factor = 10
 
 #Build main ui
 root = Tk()
@@ -199,7 +211,8 @@ canvas.configure(background='#1e1e2e', bd=0, highlightbackground = "#1e1e2e", hi
 topFrame.configure(background='#1e1e2e')
 
 try:
-    update()
+    prev_time = time.time()
+    Thread(target=update).start()
 except:
     messagebox.showerror('Error',"Camera not acessible. Please change the index.")
 selectedCamera.trace_add('write', change_camera)

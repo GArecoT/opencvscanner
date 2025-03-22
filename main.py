@@ -113,8 +113,10 @@ def set_camera(cam_index):
     # set linux or windows camera API
     if config.get("camera_default", "os") == "windows":
         vid = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
+        set_default_values()
     elif config.get("camera_default", "os") == "linux":
         vid = cv2.VideoCapture(cam_index, cv2.CAP_V4L2)
+        set_default_values()
     else:
         print("Invalid OS value. Try windows or linux.")
         exit()
@@ -133,6 +135,24 @@ def change_camera(*args):
             messagebox.showerror(
                 "Error", "Camera not acessible. Please change the index."
             )
+
+# set default values camera
+def set_default_values():
+    global vid
+    # set initial paramethers
+    vid.set(cv2.CAP_PROP_FPS, fps)
+    vid.set(cv2.CAP_PROP_POS_FRAMES, fps)
+    vid.set(cv2.CAP_PROP_FRAME_COUNT, fps)
+    vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+    vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+    vid.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
+    vid.set(cv2.CAP_PROP_AUTOFOCUS, 0.0)
+    vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.0)
+
+    # set custom paramethers
+    vid.set(cv2.CAP_PROP_FOCUS, focus)
+    vid.set(cv2.CAP_PROP_CONTRAST, contrast)
+    vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
 
 # Start setup
@@ -171,21 +191,6 @@ new_time = 0
 
 # set default camera
 set_camera(cam_index)
-
-# set initial paramethers
-vid.set(cv2.CAP_PROP_FPS, fps)
-vid.set(cv2.CAP_PROP_POS_FRAMES, fps)
-vid.set(cv2.CAP_PROP_FRAME_COUNT, fps)
-vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-vid.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc("M", "J", "P", "G"))
-vid.set(cv2.CAP_PROP_AUTOFOCUS, 0.0)
-vid.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.0)
-
-# set custom paramethers
-vid.set(cv2.CAP_PROP_FOCUS, focus)
-vid.set(cv2.CAP_PROP_CONTRAST, contrast)
-vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
 aspect_ratio = width / height
 zoom_factor = 10

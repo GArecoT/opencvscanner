@@ -83,7 +83,7 @@ def update():
                 "Error", "Camera not acessible. Please change the index."
             )
             isUpdating = False
-            return
+            break
 
         if ret:
             if canvasImage:

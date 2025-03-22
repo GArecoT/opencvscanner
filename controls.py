@@ -5,7 +5,7 @@ from tkinter import simpledialog, messagebox, Tk
 from threading import Thread
 
 
-def saveFile(count, notification):
+def saveFile(count, notification, name = ''):
     images = []
     for i in range(count):
         temp = Image.open("./.temp/" + str(i) + ".png")
@@ -14,14 +14,14 @@ def saveFile(count, notification):
     if len(images) > 0:
         dialogWindow = Tk()
         dialogWindow.withdraw()
-        answer = simpledialog.askstring("Input", "File Name", parent=dialogWindow)
+        answer = simpledialog.askstring("Input", "File Name", parent=dialogWindow, initialvalue=name)
         dialogWindow.destroy()
 
         # Check if file exists
         if os.path.isfile("./pdf_output/" + str(answer).upper() + ".pdf") == True:
             notification.config(text="File already exists")
             messagebox.showinfo("ERROR", "File already exists")
-            saveFile(count, notification)
+            saveFile(count, notification, str(answer))
         else:
             pdf_path = "./pdf_output/" + str(answer).upper() + ".pdf"
 

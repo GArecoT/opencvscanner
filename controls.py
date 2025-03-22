@@ -4,8 +4,10 @@ import os
 from tkinter import simpledialog, messagebox, Tk
 from threading import Thread
 
+zerar = False
 
 def saveFile(count, notification, name = ''):
+    global zerar
     images = []
     for i in range(count):
         temp = Image.open("./.temp/" + str(i) + ".png")
@@ -16,6 +18,10 @@ def saveFile(count, notification, name = ''):
         dialogWindow.withdraw()
         answer = simpledialog.askstring("Input", "File Name", parent=dialogWindow, initialvalue=name)
         dialogWindow.destroy()
+
+        # If cancel return 
+        if(answer == None):
+            return
 
         # Check if file exists
         if os.path.isfile("./pdf_output/" + str(answer).upper() + ".pdf") == True:
@@ -38,11 +44,13 @@ def saveFile(count, notification, name = ''):
             for filename in os.listdir("./.temp/"):
                 if os.path.isfile(os.path.join("./.temp/", filename)):
                     os.remove(os.path.join("./.temp/", filename))
+            zerar = True
     else:
         messagebox.showinfo("ERROR", "No page scanned")
 
 
 def controls(vid, key, cut, count, config, notification):
+    global zerar
 
     if key.keysym == (config.get("controls", "toggleautoexposure")):
         if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
@@ -129,6 +137,9 @@ def controls(vid, key, cut, count, config, notification):
 
     # add page
     if key.keysym == config.get("controls", "addpage"):  # this is the key code
+        if(zerar == True):
+            count = 0
+            zerar = False
         cv2.imwrite("./.temp/" + str(str(count) + ".png"), cut)
         count = count + 1
         notification.config(text="Page " + str(count) + " saved")
@@ -137,7 +148,7 @@ def controls(vid, key, cut, count, config, notification):
         Thread(target=saveFile, args=(count, notification)).start()
         # saveFile(count, notification)
         # x.start()
-        count = 0
+        # count = 0
     if key.keysym == (config.get("controls", "rotate-90")):
         return -90, count
     if key.keysym == (config.get("controls", "rotate+90")):

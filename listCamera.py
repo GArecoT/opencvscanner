@@ -6,21 +6,13 @@ class Camera:
     self.id = id 
 
 def createCameraList():
-    output = subprocess.check_output("ls /dev/ | grep video", shell=True)
-    cameraList = output.decode('ascii').split('\n')
-
-    cameraInfo = []
+    output = subprocess.check_output("v4l2-ctl --list-devices", shell=True)
+    tempCameras = output.decode('ascii').split('\n\n')
     cameraInfoName = []
-    for camera in cameraList:
-        if(camera != ''):
-            temp = subprocess.check_output("v4l2-ctl -d /dev/" + camera+ " --info", shell=True)
-            start = temp.decode('ascii').split('Name')
-            temp = start[1].split('\n')[0].split(':')[1]
-            cameraInfo.append(temp)
-
-    for index, camera in enumerate(cameraList):
-        if(camera != ''):
-            temp = Camera(cameraInfo[index], camera.replace('video',''))
-            cameraInfoName.append(temp)
-
+    for tempCamera in tempCameras:
+        temp = tempCamera.split('\n\t')
+        print(temp)
+        if(len(temp) > 1):
+            camera = Camera(temp[0], temp[1].replace('/dev/video',''))
+            cameraInfoName.append(camera)
     return cameraInfoName

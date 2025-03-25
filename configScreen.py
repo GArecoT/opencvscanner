@@ -15,6 +15,7 @@ from listCamera import createCameraList
 
 # TODO: List and parse resolutions
 
+reboot = False
 
 def handleRemap(event, root, value, config, item):
     value.config(
@@ -49,6 +50,7 @@ def save(
     saturationValue,
     selectedRotation,
 ):
+    global reboot
     config.set("camera_default", "os", str(selectedOs.get()).lower())
     config.set("camera_default", "cam_index", str(selectedCamera.get()).split(":")[0])
     config.set("camera_default", "focus", str(focusValue.get()))
@@ -56,11 +58,13 @@ def save(
     config.set("camera_default", "saturation", str(saturationValue.get()))
     config.set("camera_default", "rotation", str(selectedRotation.get()))
     config.write(open("config.ini", "w"))
-    messagebox.showerror("Warning", "Restart the program to apply changes")
+    messagebox.showerror("Warning", "The program will restart to apply changes")
+    reboot = True
     root.destroy()
 
 
-def spawnConfig():
+def spawnConfig(main):
+    global reboot
     config = configparser.ConfigParser()
     config.read("./config.ini")
 
@@ -843,7 +847,8 @@ def spawnConfig():
         highlightbackground="#1e1e2e",
         highlightcolor="#1e1e2e",
         bd=0,
-        command=lambda: save(
+        command=lambda: 
+            [save(
             root,
             config,
             selectedOs,
@@ -852,7 +857,9 @@ def spawnConfig():
             contrastValue,
             saturationValue,
             selectedRotation,
-        ),
+            ),
+            main.destroy(),
+            main.quit()]
     )
     cancel_btn = Button(
         canvasControls,
@@ -906,3 +913,4 @@ def spawnConfig():
 
     root.attributes("-type", "dialog")
     root.mainloop()
+    return reboot

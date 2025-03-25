@@ -106,7 +106,6 @@ def update():
         # if fps > 0 and 1000 / fps < 0.015:
         #     time.sleep(1000 / fps - 0.015)
 
-
 # set camera
 def set_camera(cam_index):
     print(cam_index)
@@ -163,151 +162,197 @@ def toggle_bottom():
         bottomFrameContainer.pack(fill='x')
         scroll.pack(fill="x")
 
-# Start setup
-# list cameras
-cameraList = createCameraList()
-cameraListFormated = []
-imgs = []
+def openConfig():
+    global root, reboot
+    reboot = spawnConfig(root)
 
-for camera in cameraList:
-    cameraListFormated.append(camera.id + ":" + camera.name)
-
-# Config file
-config = configparser.ConfigParser()
-createConfig(config)
-checkConfig(config)
-config.read("./config.ini")
-
-# craete dirs
-creatFolders()
-
-# load default values
-cam_index = int(config.get("camera_default", "cam_index"))
-focus = float(config.get("camera_default", "focus"))
-contrast = float(config.get("camera_default", "contrast"))
-saturation = float(config.get("camera_default", "saturation"))
-rotation = float(config.get("camera_default", "rotation"))
-fps = float(config.get("camera_default", "fps"))
-width = int(config.get("camera_default", "width"))
-height = int(config.get("camera_default", "height"))
-global count
+bottomFrameContainer = None
+scroll = None
+fps = None,
+width = None,
+height = None
+selectedCamera = None
+config = None
+canvas = None
+canvasImage = None
+prev_time = None
+new_time = None
+cut = None
+notification = None
+isUpdating = None
+zoom_factor = 0
+rotation = 0
+aspect_ratio = None
+focus = None
+contrast = None
+cam_index = None
+focus = None
+contrast = None
+saturation = None
+rotation = None
 count = 0
+reboot = False
+root = None
 
 canvasImage = None
 isUpdating = False
 prev_time = 0
 new_time = 0
 
-# set default camera
-set_camera(cam_index)
+def main():
+    global bottomFrameContainer, scroll, fps, width, height, selectedCamera, config
+    global canvas, canvasImage, cut, notification, isUpdating, zoom_factor, rotation 
+    global aspect_ratio, focus, contrast, cam_index, saturation, rotation, root, reboot
+# Start setup
+# list cameras
+    cameraList = createCameraList()
+    cameraListFormated = []
+    imgs = []
 
-aspect_ratio = width / height
-zoom_factor = 10
+    for camera in cameraList:
+        cameraListFormated.append(camera.id + ":" + camera.name)
+
+# Config file
+    config = configparser.ConfigParser()
+    createConfig(config)
+    checkConfig(config)
+    config.read("./config.ini")
+
+# craete dirs
+    creatFolders()
+
+# load default values
+    cam_index = int(config.get("camera_default", "cam_index"))
+    focus = float(config.get("camera_default", "focus"))
+    contrast = float(config.get("camera_default", "contrast"))
+    saturation = float(config.get("camera_default", "saturation"))
+    rotation = float(config.get("camera_default", "rotation"))
+    fps = float(config.get("camera_default", "fps"))
+    width = int(config.get("camera_default", "width"))
+    height = int(config.get("camera_default", "height"))
+    global count
+    count = 0
+
+    canvasImage = None
+    isUpdating = False
+    prev_time = 0
+    new_time = 0
+
+# set default camera
+    set_camera(cam_index)
+
+    aspect_ratio = width / height
+    zoom_factor = 10
 
 # Build main ui
-root = Tk()
-root.title("OpenCV Scanner")
-bottomFrameContainer = Frame(root, height=200)
-canvasImages = Canvas(bottomFrameContainer, height=100, background="#1e1e2e")
-bottomFrame = Frame(canvasImages, height=100)
-topFrame = Frame(root)
-canvas = Canvas(root)
+    root = Tk()
+    root.title("OpenCV Scanner")
+    bottomFrameContainer = Frame(root, height=200)
+    canvasImages = Canvas(bottomFrameContainer, height=100, background="#1e1e2e")
+    bottomFrame = Frame(canvasImages, height=100)
+    topFrame = Frame(root)
+    canvas = Canvas(root)
 
 # setup camera select
-selectedCamera = StringVar(topFrame)
-for index, camera in enumerate(cameraList):
-    if cam_index == int(camera.id):
-        selectedCamera.set(cameraListFormated[index])  # default value
-select = OptionMenu(topFrame, selectedCamera, *cameraListFormated)
-select.config(
-    fg="#fff",
-    bg="#313244",
-    highlightbackground="#1e1e2e",
-    highlightcolor="#1e1e2e",
-    bd=0,
-    activebackground="#424242",
-    activeforeground="#f5c2e7",
-)
-select["menu"].config(
-    fg="#fff",
-    bg="#313244",
-    bd=0,
-    activebackground="#424242",
-    activeforeground="#f5c2e7",
-)
+    selectedCamera = StringVar(topFrame)
+    for index, camera in enumerate(cameraList):
+        if cam_index == int(camera.id):
+            selectedCamera.set(cameraListFormated[index])  # default value
+    select = OptionMenu(topFrame, selectedCamera, *cameraListFormated)
+    select.config(
+        fg="#fff",
+        bg="#313244",
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+        bd=0,
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+    )
+    select["menu"].config(
+        fg="#fff",
+        bg="#313244",
+        bd=0,
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+    )
 
-config_btn = Button(
-    topFrame,
-    text="⚙",
-    fg="#f5c2e7",
-    bg="#313244",
-    activebackground="#424242",
-    activeforeground="#f5c2e7",
-    highlightbackground="#1e1e2e",
-    highlightcolor="#1e1e2e",
-    bd=0,
-    command=spawnConfig,
-)
-show_btn = Button(
-    root,
-    text="👁",
-    fg="#f5c2e7",
-    bg="#313244",
-    activebackground="#424242",
-    activeforeground="#f5c2e7",
-    highlightbackground="#1e1e2e",
-    highlightcolor="#1e1e2e",
-    bd=0,
-    anchor='sw',
-    command=toggle_bottom,
-)
+    config_btn = Button(
+        topFrame,
+        text="⚙",
+        fg="#f5c2e7",
+        bg="#313244",
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+        bd=0,
+        command=openConfig,
+    )
+    show_btn = Button(
+        root,
+        text="👁",
+        fg="#f5c2e7",
+        bg="#313244",
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+        bd=0,
+        anchor='sw',
+        command=toggle_bottom,
+    )
 
-scroll = Scrollbar(root, orient="horizontal", command=canvasImages.xview)
-scroll.config(background="#000", troughcolor="#313244", activebackground="#f5c2e7")
+    scroll = Scrollbar(root, orient="horizontal", command=canvasImages.xview)
+    scroll.config(background="#000", troughcolor="#313244", activebackground="#f5c2e7")
 
-config_btn.pack(side="left")
-show_btn.pack(side='bottom', anchor="e" )
-select.pack(side="left")
+    config_btn.pack(side="left")
+    show_btn.pack(side='bottom', anchor="e" )
+    select.pack(side="left")
 
-notification = Label(canvas, fg="#f5c2e7", bg="#313244")
+    notification = Label(canvas, fg="#f5c2e7", bg="#313244")
 
-topFrame.pack(fill="x")
-canvas.pack(fill="both", expand=True)
-canvasImages.create_window((0, 0), window=bottomFrame, anchor='nw', tags='bottomFrame')
+    topFrame.pack(fill="x")
+    canvas.pack(fill="both", expand=True)
+    canvasImages.create_window((0, 0), window=bottomFrame, anchor='nw', tags='bottomFrame')
 
-bottomFrameContainer.pack(fill="x")
-canvasImages.pack(fill="x", expand=True)
-scroll.pack(fill="x")
+    bottomFrameContainer.pack(fill="x")
+    canvasImages.pack(fill="x", expand=True)
+    scroll.pack(fill="x")
 # bottomFrame.pack_forget()
-notification.place(x=10, y=10)
+    notification.place(x=10, y=10)
 
 # Bind zoom and pan
-canvas.bind("<Button>", handle_zoom)
-canvas.bind("<ButtonPress-1>", lambda event: handlePanClick(canvas, event))
-canvas.bind(
-    "<B1-Motion>",
-    lambda event: canvas.scan_dragto(event.x, event.y, gain=1),
-)
-root.bind(
-    "<Key>",
-    lambda event: handleRotation(
-        controls(vid, event, cut, count, config, notification, bottomFrame, canvasImages, scroll, imgs)
-    ),
-)
+    canvas.bind("<Button>", handle_zoom)
+    canvas.bind("<ButtonPress-1>", lambda event: handlePanClick(canvas, event))
+    canvas.bind(
+        "<B1-Motion>",
+        lambda event: canvas.scan_dragto(event.x, event.y, gain=1),
+    )
+    root.bind(
+        "<Key>",
+        lambda event: handleRotation(
+            controls(vid, event, cut, count, config, notification, bottomFrame, canvasImages, scroll, imgs)
+        ),
+    )
 
-root.configure(background="#1e1e2e")
-canvas.configure(
-    background="#1e1e2e", bd=0, highlightbackground="#1e1e2e", highlightcolor="#1e1e2e"
-)
-topFrame.configure(background="#1e1e2e")
-bottomFrame.configure(background="#1e1e2e")
+    root.configure(background="#1e1e2e")
+    canvas.configure(
+        background="#1e1e2e", bd=0, highlightbackground="#1e1e2e", highlightcolor="#1e1e2e"
+    )
+    topFrame.configure(background="#1e1e2e")
+    bottomFrame.configure(background="#1e1e2e")
 
-try:
-    prev_time = time.time()
-    Thread(target=update).start()
-except:
-    messagebox.showerror("Error", "Camera not acessible. Please change the index.")
-selectedCamera.trace_add("write", change_camera)
+    try:
+        prev_time = time.time()
+        Thread(target=update).start()
+    except:
+        messagebox.showerror("Error", "Camera not acessible. Please change the index.")
+    selectedCamera.trace_add("write", change_camera)
 
-root.mainloop()
-vid.release()
+    root.mainloop()
+    vid.release()
+    if(reboot):
+        reboot = False
+        main()
+
+main()

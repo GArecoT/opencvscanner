@@ -6,9 +6,10 @@ from threading import Thread
 from createImage import spawnImageViewer
 
 zerar = False
+imgs = []
 
 def saveFile(count, notification, bottomFrame, name = ''):
-    global zerar
+    global zerar, imgs
     images = []
     for i in range(count):
         temp = Image.open("./.temp/" + str(i) + ".png")
@@ -49,12 +50,14 @@ def saveFile(count, notification, bottomFrame, name = ''):
             for image in bottomFrame.winfo_children():
                 image.destroy()
             zerar = True
+            imgs = []
     else:
         messagebox.showinfo("ERROR", "No page scanned")
 
 
-def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImages, scroll, imgs):
+def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImages, scroll, rootImgs):
     global zerar
+    img = rootImgs
 
     if key.keysym == (config.get("controls", "toggleautoexposure")):
         if vid.get(cv2.CAP_PROP_AUTO_EXPOSURE) == 3.0:
@@ -138,17 +141,21 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
         if count > 0:
             count = count - 1
             bottomFrame.winfo_children()[len(bottomFrame.winfo_children()) - 1].destroy()
+            imgs.pop()
             notification.config(text="Redo " + str(count + 1) + " page")
 
-    # add page
+    # add page[count]
     if key.keysym == config.get("controls", "addpage"):  # this is the key code
         if(zerar == True):
             count = 0
             zerar = False
+# add page thumb
+        img = cv2.cvtColor(cut, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(img)
         cv2.imwrite("./.temp/" + str(str(count) + ".png"), cut)
 
-        # add page thumb
-        img = Image.open("./.temp/"+  str(count) +".png")
+        
+
         h, w = img.size
         percentage = 100/h
         img = img.resize((int(h * percentage), int(w * percentage)))
@@ -167,7 +174,7 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
     # save file
     if key.keysym == config.get("controls", "savefile"):  # this is the keycode
         Thread(target=saveFile, args=(count, notification, bottomFrame)).start()
-        imgs = []
+        # imgs = []
 
         # bottomFrame.pack()
         # saveFile(count, notification)

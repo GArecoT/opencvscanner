@@ -1,12 +1,13 @@
 import cv2
-from PIL import Image
+from PIL import Image, ImageTk
 import os
-from tkinter import simpledialog, messagebox, Tk
+from tkinter import simpledialog, messagebox, Tk, Label, Button
 from threading import Thread
+from createImage import spawnImageViewer
 
 zerar = False
 
-def saveFile(count, notification, name = ''):
+def saveFile(count, notification, bottomFrame, name = ''):
     global zerar
     images = []
     for i in range(count):
@@ -27,7 +28,7 @@ def saveFile(count, notification, name = ''):
         if os.path.isfile("./pdf_output/" + str(answer).upper() + ".pdf") == True:
             notification.config(text="File already exists")
             messagebox.showinfo("ERROR", "File already exists")
-            saveFile(count, notification, str(answer))
+            saveFile(count, notification, bottomFrame, str(answer))
         else:
             pdf_path = "./pdf_output/" + str(answer).upper() + ".pdf"
 
@@ -44,12 +45,15 @@ def saveFile(count, notification, name = ''):
             for filename in os.listdir("./.temp/"):
                 if os.path.isfile(os.path.join("./.temp/", filename)):
                     os.remove(os.path.join("./.temp/", filename))
+
+            for image in bottomFrame.winfo_children():
+                image.destroy()
             zerar = True
     else:
         messagebox.showinfo("ERROR", "No page scanned")
 
 
-def controls(vid, key, cut, count, config, notification):
+def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImages, scroll, imgs):
     global zerar
 
     if key.keysym == (config.get("controls", "toggleautoexposure")):
@@ -133,6 +137,7 @@ def controls(vid, key, cut, count, config, notification):
     if key.keysym == config.get("controls", "redopage"):  # this is the key code
         if count > 0:
             count = count - 1
+            bottomFrame.winfo_children()[len(bottomFrame.winfo_children()) - 1].destroy()
             notification.config(text="Redo " + str(count + 1) + " page")
 
     # add page
@@ -141,11 +146,30 @@ def controls(vid, key, cut, count, config, notification):
             count = 0
             zerar = False
         cv2.imwrite("./.temp/" + str(str(count) + ".png"), cut)
+
+        # add page thumb
+        img = Image.open("./.temp/"+  str(count) +".png")
+        h, w = img.size
+        percentage = 100/h
+        img = img.resize((int(h * percentage), int(w * percentage)))
+        imgs.append(ImageTk.PhotoImage(img))
+        button = Button(bottomFrame, image = imgs[count], 
+                        command= lambda: spawnImageViewer(str(count - 1)))
+        button.grid(row=0, column=count)
         count = count + 1
+        
+        # update canvas
+        canvasImages.configure( scrollregion=canvasImages.bbox("all"), 
+                               xscrollcommand=scroll.set, height=100)
+        canvasImages.itemconfigure('bottomFrame',height=100)
+
         notification.config(text="Page " + str(count) + " saved")
     # save file
     if key.keysym == config.get("controls", "savefile"):  # this is the keycode
-        Thread(target=saveFile, args=(count, notification)).start()
+        Thread(target=saveFile, args=(count, notification, bottomFrame)).start()
+        imgs = []
+
+        # bottomFrame.pack()
         # saveFile(count, notification)
         # x.start()
         # count = 0

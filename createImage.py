@@ -38,6 +38,8 @@ def spawnImageViewer(img):
     global photo, frame, photoTK
     root = Toplevel()
     root.title(img)
+    root.attributes('-type', 'dialog')
+    root.geometry("500x700")
     frame = Label(root)
     photo = Image.open("./.temp/"+  str(img) +".png")
     # photo = Image.open(img)

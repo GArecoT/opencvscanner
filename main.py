@@ -1,6 +1,6 @@
 from threading import Thread
 import time
-from tkinter import messagebox, Tk, Canvas, Button, Frame, Label, OptionMenu, StringVar
+from tkinter import Scrollbar, messagebox, Tk, Canvas, Button, Frame, Label, OptionMenu, StringVar
 from PIL import Image, ImageTk
 import cv2
 from controls import controls
@@ -41,6 +41,7 @@ def handle_zoom(event):
 
 # handle rotation and add page
 def handleRotation(response):
+    
     global count
     global rotation
     temp = response[0]
@@ -96,14 +97,14 @@ def update():
                     canvas.winfo_width() / 2, 0, image=photo, anchor="n"
                 )
                 canvas.image = photo
-
-        new_time = time.time()
-        fps = int(1 / (new_time - prev_time))
-        print(fps)
-        prev_time = time.time()
-
-        if fps > 0 and 1000 / fps < 0.015:
-            time.sleep(1000 / fps - 0.015)
+        #
+        # new_time = time.time()
+        # fps = int(1 / (new_time - prev_time))
+        # print(fps)
+        # prev_time = time.time()
+        #
+        # if fps > 0 and 1000 / fps < 0.015:
+        #     time.sleep(1000 / fps - 0.015)
 
 
 # set camera
@@ -154,11 +155,19 @@ def set_default_values():
     vid.set(cv2.CAP_PROP_CONTRAST, contrast)
     vid.set(cv2.CAP_PROP_SATURATION, saturation)
 
+def toggle_bottom():
+    if(bottomFrameContainer.winfo_ismapped()):
+        bottomFrameContainer.pack_forget()
+        scroll.pack_forget()
+    else:
+        bottomFrameContainer.pack(fill='x')
+        scroll.pack(fill="x")
 
 # Start setup
 # list cameras
 cameraList = createCameraList()
 cameraListFormated = []
+imgs = []
 
 for camera in cameraList:
     cameraListFormated.append(camera.id + ":" + camera.name)
@@ -198,7 +207,9 @@ zoom_factor = 10
 # Build main ui
 root = Tk()
 root.title("OpenCV Scanner")
-bottomFrame = Frame(root)
+bottomFrameContainer = Frame(root, height=200)
+canvasImages = Canvas(bottomFrameContainer, height=100, background="#1e1e2e")
+bottomFrame = Frame(canvasImages, height=100)
 topFrame = Frame(root)
 canvas = Canvas(root)
 
@@ -237,14 +248,37 @@ config_btn = Button(
     bd=0,
     command=spawnConfig,
 )
+show_btn = Button(
+    root,
+    text="👁",
+    fg="#f5c2e7",
+    bg="#313244",
+    activebackground="#424242",
+    activeforeground="#f5c2e7",
+    highlightbackground="#1e1e2e",
+    highlightcolor="#1e1e2e",
+    bd=0,
+    anchor='sw',
+    command=toggle_bottom,
+)
+
+scroll = Scrollbar(root, orient="horizontal", command=canvasImages.xview)
+scroll.config(background="#000", troughcolor="#313244", activebackground="#f5c2e7")
 
 config_btn.pack(side="left")
+show_btn.pack(side='bottom', anchor="e" )
 select.pack(side="left")
 
 notification = Label(canvas, fg="#f5c2e7", bg="#313244")
 
 topFrame.pack(fill="x")
 canvas.pack(fill="both", expand=True)
+canvasImages.create_window((0, 0), window=bottomFrame, anchor='nw', tags='bottomFrame')
+
+bottomFrameContainer.pack(fill="x")
+canvasImages.pack(fill="x", expand=True)
+scroll.pack(fill="x")
+# bottomFrame.pack_forget()
 notification.place(x=10, y=10)
 
 # Bind zoom and pan
@@ -257,7 +291,7 @@ canvas.bind(
 root.bind(
     "<Key>",
     lambda event: handleRotation(
-        controls(vid, event, cut, count, config, notification)
+        controls(vid, event, cut, count, config, notification, bottomFrame, canvasImages, scroll, imgs)
     ),
 )
 
@@ -266,6 +300,7 @@ canvas.configure(
     background="#1e1e2e", bd=0, highlightbackground="#1e1e2e", highlightcolor="#1e1e2e"
 )
 topFrame.configure(background="#1e1e2e")
+bottomFrame.configure(background="#1e1e2e")
 
 try:
     prev_time = time.time()

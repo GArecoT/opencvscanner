@@ -168,6 +168,7 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
         # update canvas
         canvasImages.configure( scrollregion=canvasImages.bbox("all"), 
                                xscrollcommand=scroll.set, height=100)
+        canvasImages.xview_moveto(1)
         canvasImages.itemconfigure('bottomFrame',height=100)
 
         notification.config(text="Page " + str(count) + " saved")

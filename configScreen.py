@@ -11,9 +11,26 @@ from tkinter import (
 )
 import configparser
 from listCamera import createCameraList
+import subprocess
 
+resolutionList = []
 
-# TODO: List and parse resolutions
+def listResolutions (a, root):
+    global resolutionList
+    resolutionList = []
+    index = root.getvar(name = a).split(":")[0]
+    output = subprocess.check_output("v4l2-ctl -d /dev/video" + index + " --list-formats-ext", 
+                                     shell=True)
+    tempResolutions = output.decode('ascii').split('\n\n')
+    tempResolutions = tempResolutions[1].split("\n\t")
+    for res in tempResolutions:
+        if("\tSize: Discrete " in res):
+            resolution = res.removeprefix("\tSize: Discrete ")
+            # print(res.removeprefix("\tSize: Discrete "))
+            if(resolution not in resolutionList):
+                resolutionList.append(resolution)
+    # print(resolutionList)
+
 
 reboot = False
 
@@ -49,6 +66,7 @@ def save(
     contrastValue,
     saturationValue,
     selectedRotation,
+    selectedResolution
 ):
     global reboot
     config.set("camera_default", "os", str(selectedOs.get()).lower())
@@ -57,6 +75,9 @@ def save(
     config.set("camera_default", "contrast", str(contrastValue.get()))
     config.set("camera_default", "saturation", str(saturationValue.get()))
     config.set("camera_default", "rotation", str(selectedRotation.get()))
+    resolution = str(selectedResolution.get()).split("x")
+    config.set("camera_default", "width", resolution[0])
+    config.set("camera_default", "height", resolution[1])
     config.write(open("config.ini", "w"))
     messagebox.showerror("Warning", "The program will restart to apply changes")
     reboot = True
@@ -64,7 +85,7 @@ def save(
 
 
 def spawnConfig(main):
-    global reboot
+    global reboot, resolutionList
     config = configparser.ConfigParser()
     config.read("./config.ini")
 
@@ -182,6 +203,7 @@ def spawnConfig(main):
         highlightcolor="#1e1e2e",
     )
     selectedCamera = StringVar(cameraSelectCanvas)
+    selectedCamera.trace_add("write", lambda a,b,c: listResolutions(a, root))
     for index, camera in enumerate(cameraList):
         if int(config.get("camera_default", "cam_index")) == int(camera.id):
             selectedCamera.set(cameraOptions[index])  # de# default value
@@ -208,6 +230,43 @@ def spawnConfig(main):
     labelCameraSelect.pack()
     selectCamera.pack()
 
+      # Rotation Select
+    resolutionSelectCanvas = Canvas(canvas2)
+    resolutionSelectCanvas.configure(
+        background="#1e1e2e",
+        bd=0,
+        highlightbackground="#1e1e2e",
+        highlightcolor="#1e1e2e",
+    )
+    selectedResolution = StringVar(resolutionSelectCanvas)
+    # Set configs
+    resolution = config.get("camera_default", "width") + "x" + config.get("camera_default", "height")
+    # print(resolution)
+    selectedResolution.set(resolution)
+    selectResolution = OptionMenu(
+        resolutionSelectCanvas, selectedResolution, *resolutionList
+    )
+    selectResolution.config(
+        fg="#fff",
+        bg="#313244",
+        highlightbackground="#1e1e2e",
+        bd=0,
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+        highlightcolor="#f5c2e7",
+    )
+    selectResolution["menu"].config(
+        fg="#fff",
+        bg="#313244",
+        bd=0,
+        activebackground="#424242",
+        activeforeground="#f5c2e7",
+    )
+    labelResolutionSelect = Label(
+        resolutionSelectCanvas, text="Resolution", fg="#fff", bg="#1e1e2e"
+    )
+    labelResolutionSelect.pack()
+    selectResolution.pack()
     # Focus Entry
     focusEntryCanvas = Canvas(canvas2)
     focusEntryCanvas.configure(
@@ -857,6 +916,7 @@ def spawnConfig(main):
             contrastValue,
             saturationValue,
             selectedRotation,
+            selectedResolution
             ),
             main.destroy(),
             main.quit()]
@@ -881,7 +941,8 @@ def spawnConfig(main):
     cameraSelectCanvas.pack(side="left")
     canvas1.pack(fill="x", side="top", pady=10, padx=10)
     labelCamera.pack(side="top", anchor="w", ipadx=10, ipady=20)
-    focusEntryCanvas.pack(side="left")
+    resolutionSelectCanvas.pack(side="left")
+    focusEntryCanvas.pack(side="left", padx=5)
     contrastEntryCanvas.pack(side="left", padx=5)
     saturationEntryCanvas.pack(side="left")
     rotationSelectCanvas.pack(side="left", padx=5)

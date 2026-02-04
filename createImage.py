@@ -26,7 +26,7 @@ def viwerControls(key):
             photo = Image.open(path)
             photoTK = ImageTk.PhotoImage(image=photo, master=root)
             frame.configure(image=photoTK)
-            notification.config(text="Page" + str(localImg))
+            notification.config(text="Page " + str(localImg + 1))
         else:
             localImg = int(localImg) - 1
 
@@ -39,7 +39,7 @@ def viwerControls(key):
             photo = Image.open(path)
             photoTK = ImageTk.PhotoImage(image=photo, master=root)
             frame.configure(image=photoTK)
-            notification.config(text="Page" + str(localImg))
+            notification.config(text="Page " + str(localImg + 1))
         else:
             localImg = int(localImg) + 1
 
@@ -78,6 +78,7 @@ def spawnImageViewer(img):
     frame = Label(root)
     notification = Label(root, fg="#f5c2e7", bg="#313244")
     notification.place(x=10, y=10)
+    notification.config(text="Page " + str(localImg + 1))
     photo = Image.open("./.temp/"+  str(localImg) +".png")
     # photo = Image.open(img)
     photoTK = ImageTk.PhotoImage(image=photo, master=root)

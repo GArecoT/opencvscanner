@@ -9,6 +9,7 @@ from createConfig import createConfig, checkConfig, creatFolders
 import configparser
 from listCamera import createCameraList
 from configScreen import spawnConfig
+import os
 
 
 # Functions
@@ -203,8 +204,14 @@ def main():
     global bottomFrameContainer, scroll, fps, width, height, selectedCamera, config
     global canvas, canvasImage, cut, notification, isUpdating, zoom_factor, rotation 
     global aspect_ratio, focus, contrast, cam_index, saturation, rotation, root, reboot
-# Start setup
-# list cameras
+
+    # Start setup
+    # reset .temp folder
+    if(os.path.isdir("./.temp/")):
+        for filename in os.listdir("./.temp/"):
+            if os.path.isfile(os.path.join("./.temp/", filename)):
+                os.remove(os.path.join("./.temp/", filename))
+    # list cameras
     cameraList = createCameraList()
     cameraListFormated = []
     imgs = []

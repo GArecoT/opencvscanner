@@ -149,12 +149,10 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
         if(zerar == True):
             count = 0
             zerar = False
-# add page thumb
+        # add page thumb
         img = cv2.cvtColor(cut, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(img)
         cv2.imwrite("./.temp/" + str(str(count) + ".png"), cut)
-
-        
 
         h, w = img.size
         percentage = 100/h
@@ -166,6 +164,7 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
         count = count + 1
         
         # update canvas
+        canvasImages.update_idletasks()
         canvasImages.configure( scrollregion=canvasImages.bbox("all"), 
                                xscrollcommand=scroll.set, height=100)
         canvasImages.itemconfigure('bottomFrame',height=100)

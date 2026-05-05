@@ -33,9 +33,9 @@ def resize_image():
 
 def handle_zoom(event):
     global zoom_factor
-    if event.num == 4 and zoom_factor < 20:
+    if event.delta == 120 and zoom_factor < 20:
         zoom_factor += 1
-    if event.num == 5:
+    if event.delta == -120:
         if zoom_factor > 1:
             zoom_factor -= 1
 
@@ -329,7 +329,7 @@ def main():
     notification.place(x=10, y=10)
 
 # Bind zoom and pan
-    canvas.bind("<Button>", handle_zoom)
+    canvas.bind("<MouseWheel>", handle_zoom)
     canvas.bind("<ButtonPress-1>", lambda event: handlePanClick(canvas, event))
     canvas.bind(
         "<B1-Motion>",

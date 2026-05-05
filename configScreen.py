@@ -13,12 +13,13 @@ import configparser
 from listCamera import createCameraList
 import subprocess
 
-resolutionList = []
+resolutionList = ['']
 
-def listResolutions (a, root):
+def listResolutions (a, root, selectResolution):
     global resolutionList
     resolutionList = []
     index = root.getvar(name = a).split(":")[0]
+    print(index)
     output = subprocess.check_output("v4l2-ctl -d /dev/video" + index + " --list-formats-ext", 
                                      shell=True)
     tempResolutions = output.decode('ascii').split('\n\n')
@@ -30,6 +31,10 @@ def listResolutions (a, root):
             if(resolution not in resolutionList):
                 resolutionList.append(resolution)
     # print(resolutionList)
+    if(len(resolutionList) == 0):
+        resolutionList = ['']
+
+    selectResolution.set(resolutionList[0], *resolutionList)
 
 
 reboot = False
@@ -203,7 +208,6 @@ def spawnConfig(main):
         highlightcolor="#1e1e2e",
     )
     selectedCamera = StringVar(cameraSelectCanvas)
-    selectedCamera.trace_add("write", lambda a,b,c: listResolutions(a, root))
     for index, camera in enumerate(cameraList):
         if int(config.get("camera_default", "cam_index")) == int(camera.id):
             selectedCamera.set(cameraOptions[index])  # de# default value
@@ -241,7 +245,6 @@ def spawnConfig(main):
     selectedResolution = StringVar(resolutionSelectCanvas)
     # Set configs
     resolution = config.get("camera_default", "width") + "x" + config.get("camera_default", "height")
-    # print(resolution)
     selectedResolution.set(resolution)
     selectResolution = OptionMenu(
         resolutionSelectCanvas, selectedResolution, *resolutionList
@@ -267,6 +270,7 @@ def spawnConfig(main):
     )
     labelResolutionSelect.pack()
     selectResolution.pack()
+    selectedCamera.trace_add("write", lambda a,b,c: listResolutions(a, root, selectResolution))
     # Focus Entry
     focusEntryCanvas = Canvas(canvas2)
     focusEntryCanvas.configure(

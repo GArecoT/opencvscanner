@@ -173,7 +173,8 @@ def controls(vid, key, cut, count, config, notification, bottomFrame, canvasImag
         canvasImages.xview_moveto(1)
     # save file
     if key.keysym == config.get("controls", "savefile"):  # this is the keycode
-        Thread(target=saveFile, args=(count, notification, bottomFrame)).start()
+        # Thread(target=saveFile, args=(count, notification, bottomFrame)).start()
+        saveFile(count, notification, bottomFrame)
         # imgs = []
 
         # bottomFrame.pack()
